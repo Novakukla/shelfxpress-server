@@ -13,11 +13,15 @@ app.use(express.json());
 
 // Connect to MySQL using environment variables
 const db = mysql.createConnection({
-  host: process.env.DB_HOST,     // 'localhost' for Namecheap
-  user: process.env.DB_USER,     // e.g., 'novapild_shelfadmin'
-  password: process.env.DB_PASS, // your MySQL user password
-  database: process.env.DB_NAME  // e.g., 'novapild_shelfxpress'
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  ssl: {
+    rejectUnauthorized: false // AlwaysData uses a shared certificate
+  }
 });
+
 
 // Verify connection
 db.connect(err => {
