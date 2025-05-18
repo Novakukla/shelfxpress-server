@@ -4,6 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
+const https = require('https'); // Only need this once
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -22,7 +23,6 @@ const db = mysql.createConnection({
   }
 });
 
-
 // Verify connection
 db.connect(err => {
   if (err) {
@@ -32,7 +32,7 @@ db.connect(err => {
   console.log('✅ Connected to MySQL database.');
 });
 
-// Example endpoint: Get all books
+// Endpoint: Get all books
 app.get('/api/books', (req, res) => {
   db.query('SELECT * FROM books', (err, results) => {
     if (err) {
@@ -43,6 +43,24 @@ app.get('/api/books', (req, res) => {
   });
 });
 
+// Proxy OpenLibrary cover images
+/*
+app.get('/cover/:isbn', (req, res) => {
+  const { isbn } = req.params;
+  const url = `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
+
+  https.get(url, (imageRes) => {
+    if (imageRes.statusCode === 200) {
+      res.setHeader('Content-Type', imageRes.headers['content-type'] || 'image/jpeg');
+      imageRes.pipe(res);
+    } else {
+      res.status(imageRes.statusCode).send('Image not found');
+    }
+  }).on('error', () => {
+    res.status(500).send('Proxy error');
+  });
+});
+*/
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
